@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .section {
+            margin-top: 30px;
+        }
+        input, button {
+            margin: 5px;
+            padding: 10px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Personal Finance Tracker</h1>
+    
+    <div class="section">
+        <h2>Income Tracker</h2>
+        <input type="number" id="incomeAmount" placeholder="Enter income amount" />
+        <button onclick="addIncome()">Add Income</button>
+        <p id="incomeTotal">Total Income: $0</p>
+    </div>
+
+    <div class="section">
+        <h2>Expense Tracker</h2>
+        <input type="number" id="expenseAmount" placeholder="Enter expense amount" />
+        <button onclick="addExpense()">Add Expense</button>
+        <p id="expenseTotal">Total Expenses: $0</p>
+    </div>
+
+    <div class="section">
+        <h2>Generate Report</h2>
+        <button onclick="generateReport()">Generate Report</button>
+        <p id="report">Report: </p>
+    </div>
+
+    <script>
+        // Closure for income tracking
+        function incomeTracker() {
+            let income = 0; // private variable
+            return {
+                addIncome: function(amount) {
+                    income += amount; // modifies private variable
+                },
+                getIncome: function() {
+                    return income; // exposes the income value
+                }
+            };
+        }
+
+        const myIncome = incomeTracker(); // Create income tracker instance
+
+        // Closure for expense tracking
+        function expenseTracker() {
+            let expenses = []; // private array to hold expenses
+            return {
+                addExpense: function(amount) {
+                    expenses.push({ amount }); // adds expense object
+                },
+                getExpenses: function() {
+                    return expenses; // exposes expense list
+                },
+                getTotalExpenses: function() {
+                    return expenses.reduce((sum, expense) => sum + expense.amount, 0); // calculates total expenses
+                }
+            };
+        }
+
+        const myExpenses = expenseTracker(); // Create expense tracker instance
+
+        // Add income and update the UI
+        function addIncome() {
+            const incomeAmount = parseFloat(document.getElementById('incomeAmount').value);
+            if (!isNaN(incomeAmount) && incomeAmount > 0) {
+                myIncome.addIncome(incomeAmount);
+                document.getElementById('incomeTotal').textContent = `Total Income: $${myIncome.getIncome()}`;
+            } else {
+                alert('Please enter a valid income amount');
+            }
+        }
+
+        // Add expense and update the UI
+        function addExpense() {
+            const expenseAmount = parseFloat(document.getElementById('expenseAmount').value);
+            if (!isNaN(expenseAmount) && expenseAmount > 0) {
+                myExpenses.addExpense(expenseAmount);
+                document.getElementById('expenseTotal').textContent = `Total Expenses: $${myExpenses.getTotalExpenses()}`;
+            } else {
+                alert('Please enter a valid expense amount');
+            }
+        }
+
+        // Generate report using both closures and prototypes
+        function generateReport() {
+            const totalIncome = myIncome.getIncome();
+            const totalExpenses = myExpenses.getTotalExpenses();
+            const balance = totalIncome - totalExpenses;
+
+            const report = `Income: $${totalIncome} | Expenses: $${totalExpenses} | Balance: $${balance}`;
+            document.getElementById('report').textContent = `Report: ${report}`;
+        }
+    </script>
+
+</body>
+</html>
